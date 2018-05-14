@@ -1,11 +1,11 @@
 local t = Def.ActorFrame{
 
 	OnCommand=function(self)
-		if IsUsingWideScreen() then
-			self:xy(_screen.cx - 170, _screen.cy - 28)
-		else
-			self:xy(_screen.cx - 165, _screen.cy - 28)
-		end
+		--if IsUsingWideScreen() then
+		--	self:xy(_screen.cx - 170, _screen.cy - 28)
+		--else
+			self:xy(_screen.cx, _screen.cy)
+		--end
 	end,
 
 	-- ----------------------------------------
@@ -22,11 +22,11 @@ local t = Def.ActorFrame{
 		Def.Quad{
 			InitCommand=function(self)
 				self:diffuse(color("#1e282f"))
-					:zoomto( IsUsingWideScreen() and 320 or 310, 48 )
+					:zoomto( 640, 128 )
 
-				if ThemePrefs.Get("RainbowMode") then
-					self:diffusealpha(0.75)
-				end
+--				if ThemePrefs.Get("RainbowMode") then
+--					self:diffusealpha(0.75)
+--				end
 			end
 		},
 
@@ -34,16 +34,44 @@ local t = Def.ActorFrame{
 
 			InitCommand=cmd(x, -110),
 
-			-- Artist Label
+			-- Song Title
 			LoadFont("_miso")..{
-				Text="ARTIST",
-				InitCommand=cmd(horizalign, right; y, -12),
-				OnCommand=cmd(diffuse,color("0.5,0.5,0.5,1"))
+				InitCommand=cmd(horizalign,left; xy, 100,-36; maxwidth,WideScale(225,260); zoom,1.5 ),
+				SetCommand=function(self)
+					local song = GAMESTATE:GetCurrentSong()
+
+					if song and song:GetDisplayMainTitle() then
+						self:settext(song:GetDisplayMainTitle())
+						
+						if song:GetDisplaySubTitle() and song:GetDisplaySubTitle() ~= "" then
+							self:y(-36)
+						else
+							self:y(-26)
+						end
+					else
+						self:settext(SCREENMAN:GetTopScreen():GetMusicWheel():GetSelectedSection())
+						self:y(-26)
+					end
+				end
+			},
+
+			-- Song Subtitle
+			LoadFont("_miso")..{
+				InitCommand=cmd(horizalign,left; xy, 112,-12; maxwidth,WideScale(225,260) ),
+				SetCommand=function(self)
+					local song = GAMESTATE:GetCurrentSong()
+
+					if song and song:GetDisplaySubTitle() then
+						self:settext(song:GetDisplaySubTitle())
+					else
+						self:settext("")
+					end
+				end
 			},
 
 			-- Song Artist
 			LoadFont("_miso")..{
-				InitCommand=cmd(horizalign,left; xy, 5,-12; maxwidth,WideScale(225,260) ),
+				InitCommand=cmd(horizalign,left; xy, 100,16; maxwidth,WideScale(225,260); zoom,1.25 ),
 				SetCommand=function(self)
 					local song = GAMESTATE:GetCurrentSong()
 
@@ -59,42 +87,55 @@ local t = Def.ActorFrame{
 
 			-- BPM Label
 			LoadFont("_miso")..{
-				InitCommand=cmd(horizalign, right; NoStroke; y, 8),
+				InitCommand=cmd(horizalign, left; NoStroke; xy, 180, 42),
 				SetCommand=function(self)
 					self:diffuse(0.5,0.5,0.5,1)
-					self:settext("BPM")
+					
+					local text = GetDisplayBPMs()
+					
+					if text and text ~= "" then
+						self:settext("BPM")
+					else
+						self:settext("SONGS")
+					end
 				end
 			},
 
 			-- BPM value
 			LoadFont("_miso")..{
-				InitCommand=cmd(horizalign, left; NoStroke; y, 8; x, 5; diffuse, color("1,1,1,1")),
+				InitCommand=cmd(horizalign, right; NoStroke; xy, 176, 42; diffuse, color("1,1,1,1")),
 				SetCommand=function(self)
 
 					--defined in ./Scipts/SL-CustomSpeedMods.lua
 					local text = GetDisplayBPMs()
 
-					if text then
+					if text and text ~= "" then
 						self:settext(text)
 					else
-						self:settext("")
+						local group = SCREENMAN:GetTopScreen():GetMusicWheel():GetSelectedSection()
+						local songs = SONGMAN:GetSongsInGroup(group)
+						self:settext(#songs)
 					end
 				end
 			},
 
 			-- Song Length Label
 			LoadFont("_miso")..{
-				InitCommand=cmd(horizalign, right; y, 8; x, _screen.w/4.5),
+				InitCommand=cmd(horizalign, right; xy, 284, 42),
 				SetCommand=function(self)
-					local song = GAMESTATE:GetCurrentSong()
 					self:diffuse(0.5,0.5,0.5,1)
-					self:settext("LENGTH")
+					
+					if GAMESTATE:GetCurrentSong() or GAMESTATE:GetCurrentCourse() then
+						self:settext("LENGTH")
+					else
+						self:settext("")
+					end
 				end
 			},
 
 			-- Song Length Value
 			LoadFont("_miso")..{
-				InitCommand=cmd(horizalign, left; y, 8; x, _screen.w/4.5 + 5),
+				InitCommand=cmd(horizalign, left; xy, 300, 42),
 				SetCommand=function(self)
 					local duration
 
@@ -131,11 +172,7 @@ local t = Def.ActorFrame{
 
 		Def.ActorFrame{
 			OnCommand=function(self)
-				if IsUsingWideScreen() then
-					self:x(102)
-				else
-					self:x(97)
-				end
+				self:x(165):y(30)
 			end,
 
 			LoadActor("bubble.png")..{

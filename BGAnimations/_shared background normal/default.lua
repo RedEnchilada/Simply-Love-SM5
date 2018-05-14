@@ -14,7 +14,7 @@ local af = Def.ActorFrame{
 		InitCommand=function(self) self:FullScreen():Center():diffuse( ThemePrefs.Get("RainbowMode") and Color.White or Color.Black ) end,
 		BackgroundImageChangedMessageCommand=function(self)
 			THEME:ReloadMetrics()
-			SL.Global.ActiveColorIndex = 3
+			SL.Global.ActiveColorIndex = 1
 			self:linear(1):diffuse( ThemePrefs.Get("RainbowMode") and Color.White or Color.Black )
 		end,
 	}
@@ -24,10 +24,14 @@ local af = Def.ActorFrame{
 -- non-RainbowMode (normal) background
 
 local file_info = {
-	ColorRGB = {0,1,1,0,0,0,1,1,1,1},
-	diffusealpha = {0.05,0.2,0.1,0.1,0.1,0.1,0.1,0.05,0.1,0.1},
-	xy = {0,40,80,120,200,280,360,400,480,560},
-	texcoordvelocity = {{0.03,0.01},{0.03,0.02},{0.03,0.01},{0.02,0.02},{0.03,0.03},{0.02,0.02},{0.03,0.01},{-0.03,0.01},{0.05,0.03},{0.03,0.04}}
+	ColorRGB = {0,1,1,0,0,0,1,1,1,1, 0,1,1,0,0,0,1,1,1,1},
+	diffusealpha = {0.05,0.2,0.1,0.1,0.1,0.1,0.1,0.05,0.1,0.1, 0.05,0.2,0.1,0.1,0.1,0.1,0.1,0.05,0.1,0.1},
+	xy = {0,40,80,120,200,280,360,400,480,560, 20,60,100,140,220,320,380,440,520,600},
+	texcoordvelocity = {
+		{0.03,0.01},{0.03,0.02},{0.03,0.01},{0.02,0.02},{0.03,0.03},{0.02,0.02},{0.03,0.01},{-0.03,0.01},{0.05,0.03},{0.03,0.04}
+		,{0.035,0.045},{0.055,0.035},{-0.035,0.015},{0.035,0.015},{0.025,0.025}
+		,{0.035,0.015},{0.035,0.025},{0.035,0.015},{0.025,0.025},{0.035,0.035}
+	}
 }
 
 local t = Def.ActorFrame {
@@ -49,7 +53,7 @@ local t = Def.ActorFrame {
 	HideCommand=function(self) self:visible(false) end,
 }
 
-for i=1,10 do
+for i=1,#file_info.ColorRGB do
 	t[#t+1] = Def.Sprite {
 		Texture=file,
 		InitCommand=cmd(diffuse, ColorRGB( file_info.ColorRGB[i] ) ),

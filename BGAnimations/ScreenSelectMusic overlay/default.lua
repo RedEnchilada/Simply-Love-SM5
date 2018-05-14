@@ -11,17 +11,17 @@ local t = Def.ActorFrame{
 
 local files = {
 	-- make the MusicWheel appear to cascade down
-	"./MusicWheelAnimation.lua",
+	--"./MusicWheelAnimation.lua",
 	-- Apply player modifiers from profile
 	"./PlayerModifiers.lua",
-	-- Graphical Banner
-	"./Banner.lua",
-	-- Song Artist, BPM, Duration (Referred to in other themes as "PaneDisplay")
-	"./SongDescription.lua",
 	-- Difficulty Blocks
-	"./StepsDisplayList/Grid.lua",
+--	"./StepsDisplayList/Grid.lua",
 	-- a folder of Lua files to be loaded twice (once for each player)
 	"./PerPlayer",
+	-- Song Artist, BPM, Duration (Referred to in other themes as "PaneDisplay")
+	"./SongDescription.lua",
+	-- Graphical Banner
+	"./Banner.lua",
 	-- overlay for sorting the MusicWheel, hidden by default
 	"./SortMenu/default.lua"
 }
@@ -31,5 +31,13 @@ for index, file in ipairs(files) do
 		InitCommand=cmd(draworder, index)
 	}
 end
+
+-- Difficulty for each player
+t[#t+1] = LoadActor("./PlayerStepsDisplay.lua", PLAYER_1)..{
+	InitCommand=cmd(draworder, #t+1)
+}
+t[#t+1] = LoadActor("./PlayerStepsDisplay.lua", PLAYER_2)..{
+	InitCommand=cmd(draworder, #t+1)
+}
 
 return t

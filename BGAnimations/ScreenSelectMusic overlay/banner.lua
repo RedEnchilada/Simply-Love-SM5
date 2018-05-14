@@ -2,13 +2,13 @@ local banner_directory = ThemePrefs.Get("VisualTheme")
 
 local t = Def.ActorFrame{
 	OnCommand=function(self)
-		if IsUsingWideScreen() then
-			self:zoom(0.7655)
-			self:xy(_screen.cx - 170, 112)
-		else
-			self:zoom(0.74)
-			self:xy(_screen.cx - 165, 112)
-		end
+--		if IsUsingWideScreen() then
+--			self:zoom(0.7655)
+--			self:xy(_screen.cx - 170, 112)
+--		else
+			self:zoom(0.6)
+			self:xy(_screen.cx - 150, 240)
+--		end
 	end,
 
 	LoadActor("colored_banners/".. banner_directory .."/banner"..SL.Global.ActiveColorIndex.." (doubleres).png" )..{
