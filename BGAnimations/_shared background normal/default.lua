@@ -30,7 +30,7 @@ local af = Def.ActorFrame{
 
 local file_info = {
 	ColorRGB = {0,1,1,0,0,0,1,1,1,1},
-	diffusealpha = {0.05,0.2,0.1,0.1,0.1,0.1,0.1,0.05,0.1,0.1},
+	diffusealpha = {0.1,0.4,0.2,0.2,0.2,0.2,0.2,0.1,0.2,0.2},
 	xy = {0,40,80,120,200,280,360,400,480,560},
 	texcoordvelocity = {{0.03,0.01},{0.03,0.02},{0.03,0.01},{0.02,0.02},{0.03,0.03},{0.02,0.02},{0.03,0.01},{-0.03,0.01},{0.05,0.03},{0.03,0.04}}
 }
@@ -54,7 +54,7 @@ local t = Def.ActorFrame {
 	HideCommand=function(self) self:visible(false) end,
 }
 
-for i=1,10 do
+for i=1,#file_info.ColorRGB do
 	t[#t+1] = Def.Sprite {
 		Texture=file,
 		InitCommand=cmd(diffuse, ColorRGB( file_info.ColorRGB[i] ) ),
