@@ -125,12 +125,13 @@ local pd = Def.ActorFrame{
 		end
 
 		if player == PLAYER_1 then
-			self:x(_screen.w * 0.25 - 5)
+			self:x(_screen.w * 0.25 - 35)
+			self:y(_screen.h/2 + 5)
 		elseif player == PLAYER_2 then
-			self:x( _screen.w * 0.75 + 5)
+			self:x(_screen.w * 0.75 + 35)
+			self:y(_screen.h/-4 + 5)
 		end
 
-		self:y(_screen.h/2 + 5)
 	end,
 
 	PlayerJoinedMessageCommand=function(self, params)
@@ -169,7 +170,7 @@ local pd = Def.ActorFrame{
 -- colored background for chart statistics
 pd[#pd+1] = Def.Quad{
 	Name="BackgroundQuad",
-	InitCommand=cmd(zoomto, _screen.w/2-10, _screen.h/8; y, _screen.h/3 + 15.33 ),
+	InitCommand=cmd(zoomto, _screen.w/2-70, _screen.h/8; y, _screen.h/3 + 15.33 ),
 	SetCommand=function(self, params)
 		if GAMESTATE:IsHumanPlayer(player) then
 			local StepsOrTrail = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentTrail(player) or GAMESTATE:GetCurrentSteps(player)
@@ -196,11 +197,11 @@ for key, item in pairs(PaneItems) do
 		-- label
 		LoadFont("_miso")..{
 			Text=key,
-			InitCommand=cmd(zoom, zoom_factor; xy, item.label.x, item.label.y; diffuse, Color.Black; shadowlength, 0.2; halign, 0)
+			InitCommand=cmd(zoom, zoom_factor; xy, item.label.x+35, item.label.y; diffuse, Color.Black; shadowlength, 0.2; halign, 0)
 		},
 		--  numerical value
 		LoadFont("_miso")..{
-			InitCommand=cmd(zoom, zoom_factor; xy, item.data.x, item.data.y; diffuse, Color.Black; shadowlength, 0.2; halign, 1),
+			InitCommand=cmd(zoom, zoom_factor; xy, item.data.x+35, item.data.y; diffuse, Color.Black; shadowlength, 0.2; halign, 1),
 			OnCommand=cmd(playcommand, "Set"),
 			SetCommand=function(self)
 
@@ -230,35 +231,19 @@ for key, item in pairs(PaneItems) do
 	}
 end
 
--- chart difficulty meter
-pd[#pd+1] = Def.BitmapText{
-	Font="_wendy small",
-	Name="DifficultyMeter",
-	InitCommand=cmd(horizalign, right; diffuse, Color.Black; xy, _screen.w/4 - 10, _screen.h/2 - 65; queuecommand, "Set"),
-	SetCommand=function(self)
-		local SongOrCourse = (GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentCourse()) or GAMESTATE:GetCurrentSong()
-		if not SongOrCourse then
-			self:settext("")
-		else
-			local StepsOrTrail = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentTrail(player) or GAMESTATE:GetCurrentSteps(player)
-			local meter = StepsOrTrail and StepsOrTrail:GetMeter()			
-			self:settext( meter and meter or  "?" )
-		end
-	end
-}
 
 --MACHINE high score
 pd[#pd+1] = Def.BitmapText{
 	Font="_miso",
 	Name="MachineHighScore",
-	InitCommand=cmd(x, highscoreX; y, 156; zoom, zoom_factor; diffuse, Color.Black; halign, 1 )
+	InitCommand=cmd(x, highscoreX+35; y, 156; zoom, zoom_factor; diffuse, Color.Black; halign, 1 )
 }
 
 --MACHINE highscore name
 pd[#pd+1] = Def.BitmapText{
 	Font="_miso",
 	Name="MachineHighScoreName",
-	InitCommand=cmd(x, highscorenameX; y, 156; zoom, zoom_factor; diffuse, Color.Black; halign, 1; maxwidth, 60)
+	InitCommand=cmd(x, highscorenameX+35; y, 156; zoom, zoom_factor; diffuse, Color.Black; halign, 1; maxwidth, 60)
 }
 
 
@@ -266,14 +251,14 @@ pd[#pd+1] = Def.BitmapText{
 pd[#pd+1] = Def.BitmapText{
 	Font="_miso",
 	Name="PlayerHighScore",
-	InitCommand=cmd(x, highscoreX; y, 176; zoom, zoom_factor; diffuse, Color.Black; halign, 1 )
+	InitCommand=cmd(x, highscoreX+35; y, 176; zoom, zoom_factor; diffuse, Color.Black; halign, 1 )
 }
 
 --PLAYER PROFILE highscore name
 pd[#pd+1] = Def.BitmapText{
 	Font="_miso",
 	Name="PlayerHighScoreName",
-	InitCommand=cmd(x, highscorenameX; y, 176; zoom, zoom_factor; diffuse, color("0,0,0,1"); halign, 1)
+	InitCommand=cmd(x, highscorenameX+35; y, 176; zoom, zoom_factor; diffuse, color("0,0,0,1"); halign, 1)
 }
 
 return pd
