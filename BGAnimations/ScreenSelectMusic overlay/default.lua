@@ -6,7 +6,8 @@ local t = Def.ActorFrame{
 	-- Apply player modifiers from profile
 	LoadActor("./PlayerModifiers.lua"),
 	-- Difficulty Blocks (normal) or CourseContentsList (CourseMode)
-	LoadActor("./StepsDisplayList/default.lua"),
+	--@TODO fix this up so that course mode works again
+	--LoadActor("./StepsDisplayList/default.lua"),
 	-- a folder of Lua files to be loaded twice (once for each player)
 	LoadActor("./PerPlayer/default.lua"),
 	-- MenuTimer code for preserving SSM's timer value
@@ -17,6 +18,14 @@ local t = Def.ActorFrame{
 	LoadActor("./Banner.lua"),
 	-- overlay for sorting the MusicWheel, hidden by default
 	LoadActor("./SortMenu/default.lua")
+}
+
+-- Difficulty for each player
+t[#t+1] = LoadActor("./PerPlayer/PlayerStepsDisplay.lua", PLAYER_1)..{
+	InitCommand=cmd(draworder, #t+1)
+}
+t[#t+1] = LoadActor("./PerPlayer/PlayerStepsDisplay.lua", PLAYER_2)..{
+	InitCommand=cmd(draworder, #t+1)
 }
 
 return t

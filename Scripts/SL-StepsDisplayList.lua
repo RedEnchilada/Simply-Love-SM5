@@ -1,4 +1,4 @@
-function GetStepsToDisplay(AllAvailableSteps)
+function GetStepsToDisplay(AllAvailableSteps, player)
 
 	--gather any edit charts into a table
 	local edits = {}
@@ -32,135 +32,49 @@ function GetStepsToDisplay(AllAvailableSteps)
 		StepsToShow[5+k] = edit
 	end
 
-	local currentStepsP1, currentStepsP2
+	local currentSteps = GAMESTATE:GetCurrentSteps(player)
 	local finalReturn = {}
 
-	if GAMESTATE:IsPlayerEnabled(PLAYER_1) then
-		currentStepsP1 = GAMESTATE:GetCurrentSteps(PLAYER_1)
-	end
+	-- if the current chart is an edit
+	if currentSteps:IsAnEdit() then
 
-	if GAMESTATE:IsPlayerEnabled(PLAYER_2) then
-		currentStepsP2 = GAMESTATE:GetCurrentSteps(PLAYER_2)
-	end
+		local currentIndex
 
-	-- if only one player is joined
-	if (currentStepsP1 and not currentStepsP2) or (currentStepsP2 and not currentStepsP1) then
-
-		if (currentStepsP1 and not currentStepsP2) then
-			currentSteps = currentStepsP1
-		elseif (currentStepsP2 and not currentStepsP1) then
-			currentSteps = currentStepsP2
+		-- We've used GAMESTATE:GetCurrentSteps(pn) to get the current chart
+		-- use a for loop to match that "current chart" against each chart
+		-- in our charts table; we want the index of the current chart
+		for k,chart in pairs(StepsToShow) do
+			if chart:GetChartName()==currentSteps:GetChartName() then
+				currentIndex = tonumber(k)
+			end
 		end
 
-		-- if the current chart is an edit
-		if currentSteps:IsAnEdit() then
+		local frIndex = 5
 
-			local currentIndex
-
-			-- We've used GAMESTATE:GetCurrentSteps(pn) to get the current chart
-			-- use a for loop to match that "current chart" against each chart
-			-- in our charts table; we want the index of the current chart
-			for k,chart in pairs(StepsToShow) do
-				if chart:GetChartName()==currentSteps:GetChartName() then
-					currentIndex = tonumber(k)
-				end
-			end
-
-			local frIndex = 5
-
-			-- "i" will decrement here
-			-- if there is one edit chart, it will assign charts to finalReturn like
-			-- [5]Edit, [4]Challenge, [3]Hard, [2]Medium, [1]Easy
-			--
-			-- if there are two edit charts, it will assign charts to finalReturn like
-			-- [5]Edit, [4]Edit, [3]Challenge, [2]Hard, [1]Medium
-			-- and so on
-			for i=currentIndex, currentIndex-4, -1 do
-				finalReturn[frIndex] = StepsToShow[i]
-				frIndex = frIndex - 1
-			end
-
-		-- else we are somewhere in the normal five difficulties
-		-- and are, for all intents and purposes, uninterested in any edits for now
-		-- so remove all edits from the table we're returning
-		else
-
-			for k,chart in pairs(StepsToShow) do
-				if chart:IsAnEdit() then
-					StepsToShow[k] = nil
-				end
-			end
-
-			return StepsToShow
+		-- "i" will decrement here
+		-- if there is one edit chart, it will assign charts to finalReturn like
+		-- [5]Edit, [4]Challenge, [3]Hard, [2]Medium, [1]Easy
+		--
+		-- if there are two edit charts, it will assign charts to finalReturn like
+		-- [5]Edit, [4]Edit, [3]Challenge, [2]Hard, [1]Medium
+		-- and so on
+		for i=currentIndex, currentIndex-4, -1 do
+			finalReturn[frIndex] = StepsToShow[i]
+			frIndex = frIndex - 1
 		end
 
-
-	-- elseif both players are joined
-	-- This can get complicated if P1 is on beginner and P2 is on an edit
-	-- AND there is a full range of charts between
-	-- we'll have to hide SOMETHING...
-	elseif (currentStepsP1 and currentStepsP2) then
-
-		if not currentStepsP1:IsAnEdit() and not currentStepsP2:IsAnEdit() then
-			for k,chart in pairs(StepsToShow) do
-				if chart:IsAnEdit() then
-					StepsToShow[k] = nil
-				end
-			end
-			return StepsToShow
-		end
-
-
-		local currentIndexP1, currentIndexP2
-
-		-- how broad is the range of charts for this song?
-		-- (where beginner=1 and edit=6+)
-		-- and how far apart are P1 and P2 currently?
+	-- else we are somewhere in the normal five difficulties
+	-- and are, for all intents and purposes, uninterested in any edits for now
+	-- so remove all edits from the table we're returning
+	else
 
 		for k,chart in pairs(StepsToShow) do
-
-			if chart == currentStepsP1 then
-				currentIndexP1 = k
-			end
-
-			if chart == currentStepsP2 then
-				currentIndexP2 = k
+			if chart:IsAnEdit() then
+				StepsToShow[k] = nil
 			end
 		end
 
-		if (currentIndexP1 and currentIndexP2) then
-
-			local difference = math.abs(currentIndexP1-currentIndexP2)
-
-			local greaterIndex, lesserIndex
-			if currentIndexP1 > currentIndexP2 then
-				greaterIndex = currentIndexP1
-				lesserIndex = currentIndexP2
-			else
-				greaterIndex = currentIndexP2
-				lesserIndex = currentIndexP1
-			end
-
-			if difference > 4 then
-
-				local frIndex=1
-				for i=lesserIndex, lesserIndex+2 do
-					finalReturn[frIndex] = StepsToShow[i]
-					frIndex = frIndex + 1
-				end
-				for i=greaterIndex-1, greaterIndex do
-					finalReturn[frIndex] = StepsToShow[i]
-					frIndex = frIndex + 1
-				end
-
-			else
-				local frIndex = 5
-				for i=greaterIndex, greaterIndex-4, -1 do
-					finalReturn[frIndex] = StepsToShow[i]
-					frIndex = frIndex - 1
-				end
-			end
-		end
+		return StepsToShow
 	end
 
 	return finalReturn
