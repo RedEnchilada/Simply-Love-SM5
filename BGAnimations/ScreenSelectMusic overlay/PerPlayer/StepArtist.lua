@@ -4,6 +4,70 @@ local p = PlayerNumber:Reverse()[player]
 
 local pscale = (player == PLAYER_1) and 1 or -1
 
+local radar = Def.ActorFrame{
+	Name="GrooveRadar_" .. pn,
+	InitCommand=cmd(xy, 26, pscale*8),
+}
+
+-- Groove radars
+local radar_max_section = 139
+for i,opt in ipairs({
+	"Stream",
+	"Voltage",
+	"Air",
+	"Freeze",
+	"Chaos",
+}) do
+	radar[#radar+1] = Def.Quad{
+		Name=opt.."BGQuad",
+		InitCommand=cmd(zoomto, 20, radar_max_section; skewx, radar_max_section/40; x, i*_screen.h / 17; y, 0; diffuse, color("#808080"); croptop, pscale/2; cropbottom, pscale/-2 ),
+	}
+	for offs, col in ipairs({
+		"#ffff00",
+		"#ff0000",
+		"#ffffff",
+	}) do
+		radar[#radar+1] = Def.Quad{
+			Name=opt.."Quad"..offs,
+			InitCommand=cmd(zoomto, 20, 100; x, i*_screen.h / 17; y, 0; diffuse, color(col); croptop, pscale/2; cropbottom, pscale/-2 ),
+			StepsHaveChangedCommand=function(self)
+
+				self:stoptweening()
+
+				if (GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentCourse()) or GAMESTATE:GetCurrentSong() then
+					local StepsOrTrail = GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentTrail(player) or GAMESTATE:GetCurrentSteps(player)
+					if not StepsOrTrail then return end
+					
+					local radar = StepsOrTrail:GetRadarValues(player)
+					local value = math.max(0, math.min(radar_max_section, radar:GetValue(opt)*100 - radar_max_section*(offs-1)))
+					
+					self:linear(0.1):zoomto(20, value):skewx(value/40)
+				else
+					self:linear(0.1):zoomto(20, 0):skewx(0)
+				end
+			end
+		}
+	end
+	
+	radar[#radar+1] = Def.BitmapText{
+		Font="_miso",
+		InitCommand=cmd(
+			horizalign, (player == PLAYER_1) and left or right;
+			x, i*_screen.h / 17 + pscale*4;
+			y, pscale*10;
+			rotationz, 63;
+			diffuse, color("0,0,0,1")
+		),
+		StepsHaveChangedCommand=function(self)
+			if (GAMESTATE:IsCourseMode() and GAMESTATE:GetCurrentCourse()) or GAMESTATE:GetCurrentSong() then
+				self:settext(opt)
+			else
+				self:settext("")
+			end
+		end
+	}
+end
+
 return Def.ActorFrame{
 	Name="StepArtistAF_" .. pn,
 	InitCommand=cmd(draworder,1),
@@ -38,6 +102,8 @@ return Def.ActorFrame{
 			self:queuecommand("Appear" .. pn)
 		end
 	end,
+	
+	radar,
 
 	-- colored background quad
 	Def.Quad{
