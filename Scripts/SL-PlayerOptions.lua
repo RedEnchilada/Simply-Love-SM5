@@ -362,13 +362,13 @@ local Overrides = {
 	ScreenAfterPlayerOptions = {
 		Choices = function()
 			if SL.Global.GameMode == "Casual" then
-				if SL.Global.MenuTimer.ScreenSelectMusic > 1 then
+				if SL.Global.MenuTimer.ScreenSelectMusic == nil or SL.Global.MenuTimer.ScreenSelectMusic > 1 then
 					return { 'Gameplay', 'Select Music' }
 				else
 					return { 'Gameplay' }
 				end
 			else
-				if SL.Global.MenuTimer.ScreenSelectMusic > 1 then
+				if SL.Global.MenuTimer.ScreenSelectMusic == nil or SL.Global.MenuTimer.ScreenSelectMusic > 1 then
 					return { 'Gameplay', 'Select Music', 'Extra Modifiers' }
 				else
 					return { 'Gameplay', 'Extra Modifiers' }
@@ -381,7 +381,7 @@ local Overrides = {
 			return list
 		end,
 		SaveSelections = function(self, list, pn)
-			if SL.Global.MenuTimer.ScreenSelectMusic > 1 then
+			if SL.Global.MenuTimer.ScreenSelectMusic == nil or SL.Global.MenuTimer.ScreenSelectMusic > 1 then
 				if list[1] then SL.Global.ScreenAfter.PlayerOptions = Branch.GameplayScreen() end
 				if list[2] then SL.Global.ScreenAfter.PlayerOptions = SelectMusicOrCourse() end
 				if list[3] then SL.Global.ScreenAfter.PlayerOptions = "ScreenPlayerOptions2" end
@@ -394,7 +394,7 @@ local Overrides = {
 	-------------------------------------------------------------------------
 	ScreenAfterPlayerOptions2 = {
 		Choices = function()
-			if SL.Global.MenuTimer.ScreenSelectMusic > 1 then
+			if SL.Global.MenuTimer.ScreenSelectMusic == nil or SL.Global.MenuTimer.ScreenSelectMusic > 1 then
 				return { 'Gameplay', 'Select Music', 'Normal Modifiers' }
 			else
 				return { 'Gameplay', 'Normal Modifiers' }
@@ -406,7 +406,7 @@ local Overrides = {
 			return list
 		end,
 		SaveSelections = function(self, list, pn)
-			if SL.Global.MenuTimer.ScreenSelectMusic > 1 then
+			if SL.Global.MenuTimer.ScreenSelectMusic == nil or SL.Global.MenuTimer.ScreenSelectMusic > 1 then
 				if list[1] then SL.Global.ScreenAfter.PlayerOptions2 = Branch.GameplayScreen() end
 				if list[2] then SL.Global.ScreenAfter.PlayerOptions2 = SelectMusicOrCourse() end
 				if list[3] then SL.Global.ScreenAfter.PlayerOptions2 = "ScreenPlayerOptions" end
