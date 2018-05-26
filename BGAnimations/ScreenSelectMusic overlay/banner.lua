@@ -2,15 +2,7 @@ local banner_directory = ThemePrefs.Get("VisualTheme")
 local SongOrCourse, banner
 
 local t = Def.ActorFrame{
-	OnCommand=function(self)
-		if IsUsingWideScreen() then
-			self:zoom(0.7655)
-			self:xy(_screen.cx - 170, 112)
-		else
-			self:zoom(0.75)
-			self:xy(_screen.cx - 166, 112)
-		end
-	end,
+	OnCommand=cmd( zoom, 0.6; xy, _screen.cx - 150, 240),
 
 	Def.ActorFrame{
 		CurrentSongChangedMessageCommand=function(self) self:playcommand("Set") end,
